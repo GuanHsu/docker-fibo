@@ -5,7 +5,7 @@ services:
   redis:
     image: 'redis:latest'
   nginx:
-    restart: always
+    restart: on-failure
     build:
       dockerfile: Dockerfile.dev
       context: ./nginx
