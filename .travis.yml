@@ -1,0 +1,28 @@
+sudo: required
+services:
+  - docker
+  
+before_install:
+  - docker build -t mewto/docker-fibo-test -f ./client/Dockerfile.dev . 
+ 
+script:
+  - docker run mewto/docker-fibo-test npm run test -- --coverage 
+
+after_success:
+  - docker build mewto/docker-fibo-client ./client
+  - docker build mewto/docker-fibo-nginx  ./nginx
+  - docker build mewto/docker-fibo-server ./server
+  - docker build mewto/docker-fibo-worker ./worker
+
+# Login to docker CLI by setting up encrypted ID and password on Travis CI
+
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+# Take those images and push them to docker hub
+
+  - docker push mewto/docker-fibo-client 
+  - docker push mewto/docker-fibo-nginx
+  - docker push mewto/docker-fibo-server
+  - docker push mewto/docker-fibo-worker
+
+
